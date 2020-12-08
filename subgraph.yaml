@@ -1,0 +1,77 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: kp3r
+    network: mainnet
+    source:
+      address: "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44"
+      abi: kp3r
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.2
+      language: wasm/assemblyscript
+      entities:
+        - AddCredit
+        - ApplyCredit
+        - Approval
+        - DelegateChanged
+        - DelegateVotesChanged
+        - JobAdded
+        - JobRemoved
+        - KeeperBonded
+        - KeeperBonding
+        - KeeperDispute
+        - KeeperResolved
+        - KeeperSlashed
+        - KeeperUnbonding
+        - KeeperUnbound
+        - KeeperWorked
+        - RemoveJob
+        - SubmitJob
+        - Transfer
+        - UnbondJob
+      abis:
+        - name: kp3r
+          file: ./abis/kp3r.json
+      eventHandlers:
+        - event: AddCredit(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleAddCredit
+        - event: ApplyCredit(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleApplyCredit
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: DelegateChanged(indexed address,indexed address,indexed address)
+          handler: handleDelegateChanged
+        - event: DelegateVotesChanged(indexed address,uint256,uint256)
+          handler: handleDelegateVotesChanged
+        - event: JobAdded(indexed address,uint256,address)
+          handler: handleJobAdded
+        - event: JobRemoved(indexed address,uint256,address)
+          handler: handleJobRemoved
+        - event: KeeperBonded(indexed address,uint256,uint256,uint256)
+          handler: handleKeeperBonded
+        - event: KeeperBonding(indexed address,uint256,uint256,uint256)
+          handler: handleKeeperBonding
+        - event: KeeperDispute(indexed address,uint256)
+          handler: handleKeeperDispute
+        - event: KeeperResolved(indexed address,uint256)
+          handler: handleKeeperResolved
+        - event: KeeperSlashed(indexed address,indexed address,uint256,uint256)
+          handler: handleKeeperSlashed
+        - event: KeeperUnbonding(indexed address,uint256,uint256,uint256)
+          handler: handleKeeperUnbonding
+        - event: KeeperUnbound(indexed address,uint256,uint256,uint256)
+          handler: handleKeeperUnbound
+        - event: KeeperWorked(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleKeeperWorked
+        - event: RemoveJob(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleRemoveJob
+        - event: SubmitJob(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleSubmitJob
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: UnbondJob(indexed address,indexed address,indexed address,uint256,uint256)
+          handler: handleUnbondJob
+      file: ./src/mapping.ts
