@@ -1,6 +1,42 @@
-type ExampleEntity @entity {
+type transfer @entity {
   id: ID!
-  count: BigInt!
-  credit: Bytes! # address
-  job: Bytes! # address
+  send: String
+  receive: String
+  amount: BigInt!
+}
+
+type jobAdded @entity {
+  id: ID!
+  jobContract: Bytes
+  startBlock: BigInt!
+}
+
+type jobRemoved @entity {
+  id: ID!
+  jobContract: Bytes
+  removeBlock: BigInt!
+}
+
+
+type keeperBonded @entity {
+  id: ID!
+  keeperAddress: Bytes
+  startBlock: BigInt!
+  activatedTimestamp: BigInt!
+  bondBalance: BigInt!
+}
+
+type keeperBonding @entity {
+  id: ID!
+  keeperAddress: Bytes
+  startBlock: BigInt!
+  activeTimestamp: BigInt!
+  bondBalance: BigInt!
+}
+
+type info @entity {
+  id: ID!
+  totalAddJobs: BigInt!
+  totalRemoveJobs: BigInt!
+  totalCurrentJobs: BigInt! 
 }

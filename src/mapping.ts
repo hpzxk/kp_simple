@@ -21,33 +21,128 @@ import {
   Transfer,
   UnbondJob
 } from "../generated/kp3r/kp3r"
-import { ExampleEntity } from "../generated/schema"
+import { jobAdded, jobRemoved, transfer, keeperBonded, keeperBonding, info } from "../generated/schema"
+  
+export function handleAddCredit(event: AddCredit): void {}
 
-export function handleAddCredit(event: AddCredit): void {
-  // Entities can be loaded from the store using a string ID; this ID
-  // needs to be unique across all entities of the same type
-  let entity = ExampleEntity.load(event.transaction.from.toHex())
-
-  // Entities only exist after they have been saved to the store;
-  // `null` checks allow to create entities on demand
-  if (entity == null) {
-    entity = new ExampleEntity(event.transaction.from.toHex())
-
-    // Entity fields can be set using simple assignments
-    entity.count = BigInt.fromI32(0)
+export function handleTransfer(event: Transfer): void {
+  let entity = transfer.load(event.transaction.hash.toHex())
+    if (entity == null ){
+    entity = new transfer(event.transaction.hash.toHex())
+    entity.send = event.params.from.toHex()
+    entity.receive = event.params.to.toHex()
+    entity.amount = event.params.amount
+    entity.save()
   }
+}
 
-  // BigInt and BigDecimal math are supported
-  entity.count = entity.count + BigInt.fromI32(1)
 
-  // Entity fields can be set based on event parameters
-  entity.credit = event.params.credit
-  entity.job = event.params.job
+export function handleJobAdded(event: JobAdded): void {
+  
+  
+  let inf = info.load('0')
+  if (inf == null){
+    inf = new info('0')
+    inf.totalAddJobs = BigInt.fromI32(0)
+    inf.totalCurrentJobs = BigInt.fromI32(0)
+    inf.totalRemoveJobs = BigInt.fromI32(0)
+  } 
+  
 
-  // Entities can be written to the store with `.save()`
-  entity.save()
+  let entity = jobAdded.load(event.transaction.hash.toHex())
+    if (entity == null ){
+      entity = new jobAdded(event.transaction.hash.toHex())
+      entity.jobContract = event.params.job
+      entity.startBlock = event.params.block
+      inf.totalAddJobs = inf.totalAddJobs+BigInt.fromI32(1)
+      inf.totalCurrentJobs = inf.totalCurrentJobs+BigInt.fromI32(1)
+      entity.save()
+  }
+  inf.save()
+}
 
-  // Note: If a handler doesn't require existing field values, it is faster
+export function handleJobRemoved(event: JobRemoved): void {
+  let inf = info.load('0')
+  if (inf == null){
+    inf = new info('0')
+    
+    inf.totalRemoveJobs = BigInt.fromI32(0)
+    inf.totalCurrentJobs = BigInt.fromI32(0)
+  } 
+  
+  let entity = jobRemoved.load(event.transaction.hash.toHex())
+    if (entity == null ){
+      entity = new jobRemoved(event.transaction.hash.toHex())
+      entity.jobContract = event.params.job
+      entity.removeBlock = event.params.block
+      inf.totalRemoveJobs = inf.totalRemoveJobs+BigInt.fromI32(1)
+      inf.totalCurrentJobs = inf.totalCurrentJobs-BigInt.fromI32(1)
+      entity.save()
+  }
+  inf.save()
+}
+
+export function handleKeeperBonded(event: KeeperBonded): void {
+  
+  let entity = keeperBonded.load(event.transaction.hash.toHex())
+    if (entity == null ){
+      entity = new keeperBonded(event.transaction.hash.toHex())
+      entity.keeperAddress = event.params.keeper
+      entity.startBlock = event.params.block
+      entity.activatedTimestamp = event.params.activated
+      entity.bondBalance = event.params.bond
+      entity.save()
+  }
+}
+
+
+export function handleKeeperBonding(event: KeeperBonding): void {
+  
+  let entity = keeperBonding.load(event.transaction.hash.toHex())
+  if (entity == null ){
+    entity = new keeperBonding(event.transaction.hash.toHex())
+    entity.keeperAddress = event.params.keeper
+    entity.startBlock = event.params.block
+    entity.activeTimestamp = event.params.active
+    entity.bondBalance = event.params.bond
+    entity.save()
+}
+}
+
+
+
+
+
+
+
+
+export function handleApplyCredit(event: ApplyCredit): void {}
+
+export function handleApproval(event: Approval): void {}
+
+export function handleDelegateChanged(event: DelegateChanged): void {}
+
+export function handleDelegateVotesChanged(event: DelegateVotesChanged): void {}
+
+export function handleKeeperDispute(event: KeeperDispute): void {}
+
+export function handleKeeperResolved(event: KeeperResolved): void {}
+
+export function handleKeeperSlashed(event: KeeperSlashed): void {}
+
+export function handleKeeperUnbonding(event: KeeperUnbonding): void {}
+
+export function handleKeeperUnbound(event: KeeperUnbound): void {}
+
+export function handleKeeperWorked(event: KeeperWorked): void {}
+
+export function handleRemoveJob(event: RemoveJob): void {}
+
+export function handleSubmitJob(event: SubmitJob): void {}
+
+export function handleUnbondJob(event: UnbondJob): void {}
+
+// Note: If a handler doesn't require existing field values, it is faster
   // _not_ to load the entity from the store. Instead, create it fresh with
   // `new Entity(...)`, set the fields that should be updated and save the
   // entity back to the store. Fields that were not set or unset remain
@@ -121,40 +216,3 @@ export function handleAddCredit(event: AddCredit): void {
   // - contract.unbondings(...)
   // - contract.votes(...)
   // - contract.workCompleted(...)
-}
-
-export function handleApplyCredit(event: ApplyCredit): void {}
-
-export function handleApproval(event: Approval): void {}
-
-export function handleDelegateChanged(event: DelegateChanged): void {}
-
-export function handleDelegateVotesChanged(event: DelegateVotesChanged): void {}
-
-export function handleJobAdded(event: JobAdded): void {}
-
-export function handleJobRemoved(event: JobRemoved): void {}
-
-export function handleKeeperBonded(event: KeeperBonded): void {}
-
-export function handleKeeperBonding(event: KeeperBonding): void {}
-
-export function handleKeeperDispute(event: KeeperDispute): void {}
-
-export function handleKeeperResolved(event: KeeperResolved): void {}
-
-export function handleKeeperSlashed(event: KeeperSlashed): void {}
-
-export function handleKeeperUnbonding(event: KeeperUnbonding): void {}
-
-export function handleKeeperUnbound(event: KeeperUnbound): void {}
-
-export function handleKeeperWorked(event: KeeperWorked): void {}
-
-export function handleRemoveJob(event: RemoveJob): void {}
-
-export function handleSubmitJob(event: SubmitJob): void {}
-
-export function handleTransfer(event: Transfer): void {}
-
-export function handleUnbondJob(event: UnbondJob): void {}
